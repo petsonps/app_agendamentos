@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Substituição</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container my-5">
+        <div class="text-center mb-4">
+            <h2>Confirmar Substituição de Agendamento</h2>
+        </div>
+        <div class="alert alert-warning" role="alert">
+            <p>Já existe um agendamento para este cliente no mesmo dia. Deseja substituir o agendamento anterior?</p>
+            <ul>
+                <li><strong>Nome:</strong> {{ existing_appointment.name }}</li>
+                <li><strong>Telefone:</strong> {{ existing_appointment.phone }}</li>
+                <li><strong>Email:</strong> {{ existing_appointment.email }}</li>
+                <li><strong>Data e Hora:</strong> {{ existing_appointment.date_time.strftime('%Y-%m-%d %H:%M') }}</li>
+            </ul>
+            <form method="POST" action="{{ url_for('confirm_replace') }}">
+                <button type="submit" class="btn btn-danger">Confirmar Substituição</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
