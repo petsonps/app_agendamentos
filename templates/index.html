@@ -8,9 +8,72 @@
     <link href='https://unpkg.com/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
     <script src='https://unpkg.com/fullcalendar@5.10.1/main.min.js'></script>
     <script src='https://unpkg.com/fullcalendar@5.10.1/locales-all.min.js'></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        #calendar {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .card-body {
+            background-color: #fff;
+        }
+
+        .btn-primary {
+            background-color: #343a40;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #495057;
+        }
+
+        .table {
+            background-color: #fff;
+        }
+
+        .table thead th {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .alert {
+            margin-top: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        #appointmentForm {
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container my-5">
+    <div class="container">
         <div class="text-center mb-4">
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="img-fluid" style="max-width: 200px;">
         </div>
@@ -31,77 +94,96 @@
         {% endwith %}
 
         <div class="row">
-            <div class="col-md-6">
-                <div id="calendar" class="mb-4"></div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Calendário de Agendamentos</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="calendar"></div>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <form method="POST" id="appointmentForm" class="d-none">
-                    <div class="form-group">
-                        <label for="name">Nome</label>
-                        <input type="text" class="form-control" name="name" id="name" placeholder="Nome" required>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Cadastrar Agendamento</h4>
                     </div>
-                    <div class="form-group">
-                        <label for="phone">Telefone</label>
-                        <input type="tel" class="form-control" name="phone" id="phone" placeholder="Telefone" required>
+                    <div class="card-body">
+                        <form method="POST" id="appointmentForm" class="d-none">
+                            <div class="form-group">
+                                <label for="name">Nome</label>
+                                <input type="text" class="form-control" name="name" id="name" placeholder="Nome" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Telefone</label>
+                                <input type="tel" class="form-control" name="phone" id="phone" placeholder="Telefone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" name="email" id="email" placeholder="Email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="seller">Vendedor</label>
+                                <select class="form-control" name="seller" id="seller">
+                                    <option>Bruno</option>
+                                    <option>Sarah</option>
+                                    <option>Denise</option>
+                                    <option>Erica</option>
+                                    <option>Rosi</option>
+                                    <option>Fabiana</option>
+                                    <option>Petson</option>
+                                    <option>Wanderson</option>
+                                    <option>Priscilla</option>
+                                </select>
+                            </div>
+                            <input type="hidden" name="date_time" id="selectedDateTime">
+                            <button type="submit" class="btn btn-primary">Cadastrar</button>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" name="email" id="email" placeholder="Email" required>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Agendamentos Confirmados</h4>
                     </div>
-                    <div class="form-group">
-                        <label for="seller">Vendedor</label>
-                        <select class="form-control" name="seller" id="seller">
-                            <option>Bruno</option>
-                            <option>Sarah</option>
-                            <option>Denise</option>
-                            <option>Erica</option>
-                            <option>Rosi</option>
-                            <option>Fabiana</option>
-                            <option>Petson</option>
-                            <option>Wanderson</option>
-                            <option>Priscilla</option>
-                        </select>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="filter-date">Filtrar por Data</label>
+                            <input type="date" class="form-control" id="filter-date" placeholder="Filtrar por Data">
+                        </div>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Horário</th>
+                                    <th>Telefone</th>
+                                    <th>Email</th>
+                                    <th>Vendedor</th>
+                                    <th>Notificado</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointment-table">
+                                {% for appointment in appointments %}
+                                <tr>
+                                    <td>{{ appointment.name }}</td>
+                                    <td>{{ appointment.date_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>{{ appointment.phone }}</td>
+                                    <td>{{ appointment.email }}</td>
+                                    <td>{{ appointment.seller }}</td>
+                                    <td>{{ appointment.notificado }}</td>
+                                    <td>
+                                        <form action="{{ url_for('delete_appointment', appointment_id=appointment.id) }}" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <input type="hidden" name="date_time" id="selectedDateTime">
-                    <button type="submit" class="btn btn-primary">Cadastrar</button>
-                </form>
-
-                <div class="mt-5">
-                    <h2>Agendamentos Confirmados</h2>
-                    <div class="form-group">
-                        <label for="filter-date">Filtrar por Data</label>
-                        <input type="date" class="form-control" id="filter-date" placeholder="Filtrar por Data">
-                    </div>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Horário</th>
-                                <th>Telefone</th>
-                                <th>Email</th>
-                                <th>Vendedor</th>
-                                <th>Notificado</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="appointment-table">
-                            {% for appointment in appointments %}
-                            <tr>
-                                <td>{{ appointment.name }}</td>
-                                <td>{{ appointment.date_time.strftime('%Y-%m-%d %H:%M') }}</td>
-                                <td>{{ appointment.phone }}</td>
-                                <td>{{ appointment.email }}</td>
-                                <td>{{ appointment.seller }}</td>
-                                <td>{{ appointment.notificado }}</td>
-                                <td>
-                                    <form action="{{ url_for('delete_appointment', appointment_id=appointment.id) }}" method="post" style="display:inline;">
-                                        <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
